@@ -1,13 +1,10 @@
-name: Update website
+name: Preview website
 on:
   pull_request:
     branches:
       - main
-    types:
-      - closed
 jobs:
   call:
-    if: ${{ github.event.pull_request.merged }}
     uses: ./.github/workflows/build-website.yaml
   deploy:
     needs: call
@@ -22,3 +19,5 @@ jobs:
       - name: Publish
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          preview: true
