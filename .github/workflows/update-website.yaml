@@ -8,7 +8,7 @@ on:
       - closed
 jobs:
   call:
-    if: ${{ github.event.pull_request.merged }}
+    if: github.event.pull_request.merged || github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/build-website.yaml
   deploy:
     needs: call
