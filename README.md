@@ -1,4 +1,4 @@
-# Oceandata Notebooks Fix
+# Oceandata Notebooks
 
 Welcome to the repository of tutorials for users of the [Ocean Biology Distributed Active Archive Center (OB.DAAC)][OB].
 
