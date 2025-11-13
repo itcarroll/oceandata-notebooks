@@ -1,12 +1,11 @@
-name: Deploy website
+name: Update website
 on:
-  workflow_run:
-    workflows: ["Build website"]
-    types:
-      - completed
+  workflow_dispatch:
 jobs:
+  build:
+    uses: ./.github/workflows/build-website.yaml
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: build
     permissions:
       pages: write
       id-token: write
