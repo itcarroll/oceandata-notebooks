@@ -1,8 +1,12 @@
 name: Update website
 on:
   workflow_dispatch:
+  pull_request:
+    types:
+      - closed
 jobs:
   call:
+    if: github.event.pull_request.merged == 'true'
     uses: ./.github/workflows/build-website.yaml
   deploy:
     needs: call
