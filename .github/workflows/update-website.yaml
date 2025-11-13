@@ -2,6 +2,8 @@ name: Update website
 on:
   workflow_dispatch:
   pull_request:
+    branches:
+      - main
     types:
       - closed
 jobs:
