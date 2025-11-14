@@ -32,7 +32,7 @@ jobs:
       - name: Build args
         id: env
         run: |
-          echo '${{ steps.meta.outputs.json }}' | jq -r '.tags[0] | "LABELS=\"" + . + "\""' >> "$GITHUB_ENV"
+          echo '${{ steps.meta.outputs.json }}' | jq '.tags[0] | "LABELS=\"" + . + "\""' >> "$GITHUB_ENV"
       # echo "LABELS=${{ fromJSON(steps.meta.outputs.json).tags[0] }}" >> "$GITHUB_ENV"
       # echo '${{ steps.meta.outputs.json }}' | jq -r '.labels | to_entries | map("\(.key)=\"\(.value)\"") | join(" ") | "LABELS=\"" + . + "\""'
       - name: Debug
