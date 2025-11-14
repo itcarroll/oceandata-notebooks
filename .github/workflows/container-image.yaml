@@ -50,19 +50,21 @@ jobs:
       - name: Install repo2docker
         run: pip install jupyter-repo2docker
       - name: Run repo2docker
-        run: >
-          jupyter-repo2docker
-          --no-run
-          --user-id 1000
-          --user-name jovyan
-          --subdir container
-          --image-name ${{ github.repository }}
-          --target-repo-dir /srv/container
-          --appendix "$(< ${PWD}/container/appendix)"
-          --label "${{ steps.meta.outputs.labels }}"
-          --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${{ steps.meta.outputs.json.tags[0] }}:buildcache"
-          --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${{ steps.meta.outputs.json.tags[0] }}:buildcache,mode=max"
-          ${PWD}
-      - name: Push
-        run: |
-          docker tag ${{ github.repository }} ${{ steps.meta.outputs.tags }}
+        run:
+          echo "${{ steps.meta.outputs.json }}"
+      #   run: >
+      #     jupyter-repo2docker
+      #     --no-run
+      #     --user-id 1000
+      #     --user-name jovyan
+      #     --subdir container
+      #     --image-name ${{ github.repository }}
+      #     --target-repo-dir /srv/container
+      #     --appendix "$(< ${PWD}/container/appendix)"
+      #     --label "${{ steps.meta.outputs.labels }}"
+      #     --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${{ steps.meta.outputs.json.tags[0] }}:buildcache"
+      #     --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${{ steps.meta.outputs.json.tags[0] }}:buildcache,mode=max"
+      #     ${PWD}
+      # - name: Push
+      #   run: |
+      #     docker tag ${{ github.repository }} ${{ steps.meta.outputs.tags }}
