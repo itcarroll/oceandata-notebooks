@@ -44,20 +44,20 @@ jobs:
       - name: Install repo2docker
         run: pip install jupyter-repo2docker
       - name: Run repo2docker
-        run: |
-          LABELS='${{ steps.meta.outputs.labels }}'
-          jupyter-repo2docker \
-            --no-run \
-            --user-id 1000 \
-            --user-name jovyan \
-            --subdir container \
-            --image-name ${IMAGE_NAME} \
-            --target-repo-dir /srv/container \
-            --appendix "$(< ${PWD}/container/appendix)" \
-            --label "${LABELS//$'\n'/ }" \
-            --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${IMAGE_NAME}:buildcache" \
-            --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${IMAGE_NAME}:buildcache,mode=max" \
-            ${PWD}
+        run: >
+          jupyter-repo2docker
+          --no-run
+          --user-id 1000
+          --user-name jovyan
+          --subdir container
+          --image-name ${IMAGE_NAME}
+          --target-repo-dir /srv/container
+          --appendix "$(< ${PWD}/container/appendix)"
+          --label "${DOCKER_METADATA_OUTPUT_LABELS//$'\n'/ }"
+          --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${IMAGE_NAME}:cache"
+          --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${IMAGE_NAME}:cache,mode=max"
+          ${PWD}
       - name: Push
         run: |
           docker tag ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+          docker push ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
