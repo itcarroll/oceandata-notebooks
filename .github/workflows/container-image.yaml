@@ -51,7 +51,7 @@ jobs:
         run: pip install jupyter-repo2docker
       - name: Run repo2docker
         run:
-          echo "${{ steps.meta.outputs.json }}"
+          echo "${{ fromJSON(steps.meta.outputs.json).tags }}"
       #   run: >
       #     jupyter-repo2docker
       #     --no-run
