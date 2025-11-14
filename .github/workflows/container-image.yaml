@@ -56,7 +56,7 @@ jobs:
           --image-name $IMAGE_NAME
           --target-repo-dir /srv/container
           --appendix "$(< $PWD/container/appendix)"
-          --label "$DOCKER_METADATA_OUTPUT_LABELS"
+          --DockerEngine.extra_buildx_build_args="-t$DOCKER_METADATA_OUTPUT_TAGS"
           --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=$IMAGE_NAME:cache"
           --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=$IMAGE_NAME:cache,mode=max"
           $PWD
