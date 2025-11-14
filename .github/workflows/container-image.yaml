@@ -27,7 +27,7 @@ jobs:
             type=raw,value=latest,enable=true
           sep-tags: " "
           labels: |
-            org.opencontainers.image.description='\# README\nXYZ'
+            org.opencontainers.image.description='README\nXYZ'
           sep-labels: " "
       - name: Debug labels
         run: echo ${{ steps.meta.outputs.labels }}
