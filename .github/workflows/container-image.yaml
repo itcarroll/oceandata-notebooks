@@ -44,8 +44,9 @@ jobs:
       - name: Install repo2docker
         run: pip install jupyter-repo2docker
       - name: Run repo2docker
-        run: >
-          LABELS='${{ steps.meta.outputs.labels }}' echo "${LABELS//$'\n'/,}"
+        run: |
+          LABELS='${{ steps.meta.outputs.labels }}'
+          echo "${LABELS//$'\n'/,}"
         # LABELS='${{ steps.meta.outputs.labels }}' jupyter-repo2docker
         # --no-run
         # --user-id 1000
