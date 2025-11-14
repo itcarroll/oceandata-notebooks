@@ -45,7 +45,7 @@ jobs:
       #   run: pip install jupyter-repo2docker
       - name: Run repo2docker
         run: |
-          LABELS=${{ toJSON(steps.meta.outputs.labels) }}
+          LABELS='${{ toJSON(steps.meta.outputs.labels) }}'
           echo ${LABELS}
         # jupyter-repo2docker \
         #   --no-run \
