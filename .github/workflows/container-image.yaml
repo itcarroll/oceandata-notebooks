@@ -5,13 +5,12 @@ on:
     paths:
       - .github/workflows/container-image.yml
       - container/**
-env:
-  REGISTRY: ghcr.io
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ${{ env.REGISTRY }}/${{ github.repository }}
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
     permissions:
       contents: read
       packages: write
