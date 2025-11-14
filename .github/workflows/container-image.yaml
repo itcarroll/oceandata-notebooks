@@ -26,9 +26,9 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest,enable=true
           labels: |
-            org.opencontainers.image.description="TODO"
-            repo2docker.repo="https://github.com/${{ github.repository }}"
-            repo2docker.ref="${{ github.ref }}"
+            org.opencontainers.image.description=TODO
+            repo2docker.repo=https://github.com/${{ github.repository }}
+            repo2docker.ref=${{ github.ref }}
           sep-labels: " "
       - name: Build args
         id: env
