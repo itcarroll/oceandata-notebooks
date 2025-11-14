@@ -15,15 +15,6 @@ jobs:
       contents: read
       packages: write
     steps:
-      # - name: Export variables
-      #   uses: actions/github-script@v8
-      #   with:
-      #     script: |
-      #       const registry = process.env.REGISTRY
-      #       const repo = process.env.GITHUB_REPOSITORY
-      #       const hash = process.env.GITHUB_SHA.substring(0, 12)
-      #       core.exportVariable('INPUT_IMAGE_NAME', `${registry}/${repo}`)
-      #       core.exportVariable('SHA_NAME', `${registry}/${repo}:${hash}`)
       - name: Checkout container files
         uses: actions/checkout@v5
         with:
@@ -52,7 +43,7 @@ jobs:
         run: pip install jupyter-repo2docker
       - name: Run repo2docker
         run: >
-          jupyter-repo2docker
+          LABELS='${{ steps.meta.outputs.labels }}' jupyter-repo2docker
           --no-run
           --user-id 1000
           --user-name jovyan
@@ -60,7 +51,7 @@ jobs:
           --image-name ${IMAGE_NAME}
           --target-repo-dir /srv/container
           --appendix "$(< ${PWD}/container/appendix)"
-          --label "${${{ steps.meta.outputs.labels }}//$'\n'/ }"
+          --label "${LABELS//$'\n'/ }"
           --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${IMAGE_NAME}:buildcache"
           --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${IMAGE_NAME}:buildcache,mode=max"
           ${PWD}
