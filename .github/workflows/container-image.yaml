@@ -33,10 +33,13 @@ jobs:
         id: env
         run: |
           echo '${{ steps.meta.outputs.json }}' | jq -r '.tags | join("-t ") | "TAGS=\"" + . + "\""' >> "$GITHUB_ENV"
+          echo '${{ steps.meta.outputs.json }}' | jq -r '.labels | join(" ") | "LABELS=\"" + . + "\""' >> "$GITHUB_ENV"
       # echo "LABELS=${{ fromJSON(steps.meta.outputs.json).tags[0] }}" >> "$GITHUB_ENV"
       # echo '${{ steps.meta.outputs.json }}' | jq -r '.labels | to_entries | map("\(.key)=\"\(.value)\"") | join(" ") | "LABELS=\"" + . + "\""'
       - name: Debug
-        run: echo ${TAGS}
+        run: |
+          echo ${TAGS}
+          echo ${LABELS}
       # - name: Authenticate with registry
       #   uses: docker/login-action@v3
       #   with:
