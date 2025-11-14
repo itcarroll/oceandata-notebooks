@@ -19,5 +19,10 @@ jobs:
       - name: Publish
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          preview: true
+
+# can i use gh-pages fork as a deploy target?
+# submitter would fork and pr
+# - deployment would come from whichever branch
+# - would have to create a PR comment
+# - would need multiple forks if working on multiple PRs
+# anyone looking at the PR could see it
