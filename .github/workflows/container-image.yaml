@@ -43,6 +43,7 @@ jobs:
       - name: Run repo2docker
         run: >
           jupyter-repo2docker
+          --load
           --no-run
           --user-id 1000
           --user-name jovyan
