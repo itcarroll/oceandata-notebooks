@@ -27,6 +27,7 @@ jobs:
             type=raw,value=latest,enable=true
           labels: |
             org.opencontainers.image.description=ABC
+          sep-labels: " "
       - name: Debug
         run: echo ${{ steps.meta.outputs.labels }}
       # - name: Authenticate with registry
