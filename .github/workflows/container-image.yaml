@@ -63,5 +63,5 @@ jobs:
           --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${{ steps.meta.inputs.images }}:buildcache,mode=max"
           ${PWD}
       - name: Push
-        run:
-          - docker tag ${{ github.repository }} ${{ steps.meta.outputs.tags }}
+        run: |
+          docker tag ${{ github.repository }} ${{ steps.meta.outputs.tags }}
