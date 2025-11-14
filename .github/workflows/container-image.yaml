@@ -25,12 +25,16 @@ jobs:
           tags: |
             type=sha,prefix=
             type=raw,value=latest,enable=true
-          labels: |
-            org.opencontainers.image.description=# README\nXYZ
+          labels: >
+            org.opencontainers.image.description=
+              # README
+              Markdown is here.
+
+            repo2docker.ref=${{ github.ref }}
       - name: Build args
         id: env
         run: |
-          echo "LABELS=${{ steps.meta.outputs.json.tag_names[0] }}" >> "$GITHUB_ENV"
+          echo "LABELS=${{ steps.meta.outputs.json.tags[0] }}" >> "$GITHUB_ENV"
       # echo '${{ steps.meta.outputs.json }}' | jq '.labels | to_entries | map("\(.key)=\"\(.value)\"") | join(" ") | "LABELS="+.'
       - name: Debug
         run: echo ${LABELS}
