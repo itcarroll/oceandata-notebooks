@@ -43,7 +43,6 @@ jobs:
       - name: Run repo2docker
         run: >
           jupyter-repo2docker
-          --load
           --no-run
           --user-id 1000
           --user-name jovyan
@@ -52,6 +51,7 @@ jobs:
           --target-repo-dir /srv/container
           --appendix "$(< ${PWD}/container/appendix)"
           --label "${DOCKER_METADATA_OUTPUT_LABELS//$'\n'/ }"
+          --DockerEngine.extra_buildx_build_args="--load"
           --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${IMAGE_NAME}:cache"
           --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${IMAGE_NAME}:cache,mode=max"
           ${PWD}
