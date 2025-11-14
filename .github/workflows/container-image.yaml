@@ -43,6 +43,7 @@ jobs:
       - name: Run repo2docker
         run: >
           jupyter-repo2docker
+          --push
           --no-run
           --user-id 1000
           --user-name jovyan
@@ -51,14 +52,14 @@ jobs:
           --target-repo-dir /srv/container
           --appendix "$(< ${PWD}/container/appendix)"
           --label "${DOCKER_METADATA_OUTPUT_LABELS//$'\n'/ }"
-          --DockerEngine.extra_buildx_build_args="--load"
+          --DockerEngine.extra_buildx_build_args="--tag ${DOCKER_METADATA_OUTPUT_TAGS//$'\n'/ --tag }"
           --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${IMAGE_NAME}:cache"
           --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${IMAGE_NAME}:cache,mode=max"
           ${PWD}
-      - name: Debug image
-        run: |
-          docker image list
-      - name: Push image
-        run: |
-          docker tag ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
-          docker push ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+      # - name: Debug image
+      #   run: |
+      #     docker image list
+      # - name: Push image
+      #   run: |
+      #     docker tag ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
+      #     docker push ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
