@@ -26,11 +26,11 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest,enable=true
           labels: |
-            org.opencontainers.image.description='README\nXYZ'
+            org.opencontainers.image.description=# README\nXYZ
       - name: Build args
         id: env
         run: |
-          echo "LABELS=${{ github.repository }}" >> "$GITHUB_ENV"
+          echo "LABELS=${{ steps.meta.outputs.json.tag_names[0] }}" >> "$GITHUB_ENV"
       # echo '${{ steps.meta.outputs.json }}' | jq '.labels | to_entries | map("\(.key)=\"\(.value)\"") | join(" ") | "LABELS="+.'
       - name: Debug
         run: echo ${LABELS}
