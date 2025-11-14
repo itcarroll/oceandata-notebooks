@@ -11,9 +11,6 @@ jobs:
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ghcr.io/${{ github.repository }}
-    permissions:
-      contents: read
-      packages: write
     steps:
       - name: Checkout container files
         uses: actions/checkout@v5
@@ -57,7 +54,7 @@ jobs:
           --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=${IMAGE_NAME}:cache"
           --DockerEngine.extra_buildx_build_args="--cache-to=type=registry,ref=${IMAGE_NAME}:cache,mode=max"
           ${PWD}
-      - name: Push
+      - name: Push image
         run: |
           docker tag ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
           docker push ${IMAGE_NAME} ${{ fromJSON(steps.meta.outputs.json).tags[0] }}
