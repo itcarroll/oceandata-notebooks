@@ -55,7 +55,11 @@ jobs:
           --image-name $IMAGE_NAME
           --target-repo-dir /srv/container
           --appendix "$(< $PWD/container/appendix)"
-          --DockerEngine.extra_buildx_build_args="--cache-from=type=registry,ref=$IMAGE_NAME:cache --cache-to=type=registry,ref=$IMAGE_NAME:cache,mode=max"
+          --DockerEngine.extra_buildx_build_args="
+          --label test=test
+          --cache-from type=registry,ref=$IMAGE_NAME:cache
+          --cache-to type=registry,ref=$IMAGE_NAME:cache,mode=max
+          "
           $PWD
 
       # - name: Debug image
