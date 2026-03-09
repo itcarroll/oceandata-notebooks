@@ -9,7 +9,7 @@ on:
   pull_request:
     paths: *paths
   schedule:
-    - cron: "32 16 * * *"
+    - cron: '32 16 * * *'
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -86,8 +86,9 @@ jobs:
       - name: Compare layers
         if: github.event_name == 'schedule'
         run: |
-          NEW_LAYERS=$(docker manifest inspect "${DOCKER_METADATA_OUTPUT_TAGS[0]}" | jq -c '[.layers[].digest]')
+          TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
+          NEW_LAYERS=$(docker manifest inspect "${TAGS[0]}" | jq -c '[.layers[].digest]')
           if [ "$NEW_LAYERS" = "$OLD_LAYERS" ]; then
             echo "Layers are identical, overwriting pushed image."
-            docker buildx imagetools create --tag ${DOCKER_METADATA_OUTPUT_TAGS[0]} ${DOCKER_METADATA_OUTPUT_TAGS[-1]}
+            docker buildx imagetools create --tag ${TAGS[0]} ${TAGS[-1]}
           fi
