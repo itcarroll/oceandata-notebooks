@@ -25,10 +25,11 @@ jobs:
           path: docs/_cache
           key: jupyter-book-cache-${{ hashFiles('docs/_cache.dvc') }}
       - name: Update jcache
+        if: steps.jcache.outputs.cache-hit != 'true'
         shell: micromamba-shell {0}
-        run: dvc status --quiet docs/_cache || dvc pull docs/_cache
+        run: dvc pull docs/_cache
         env:
-          AWS_REGION: 'us-west-2'
+          AWS_REGION: us-west-2
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REGISTRY: ghcr.io
-      IMAGE_NAME: oceandata-jupyterlab
+      PACKAGE: oceandata-jupyterlab
       BUILDX_NO_DEFAULT_ATTESTATIONS: 1
     permissions:
       packages: write
@@ -29,19 +29,19 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.PACKAGE }}
           tags: |
             type=sha,prefix=
             type=schedule,pattern={{date 'YYYYMMDD'}}
             type=raw,value=latest,enable=${{ github.event_name == 'push' }}
           labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.title=${{ env.PACKAGE }}
             org.opencontainers.image.description=environment_with_JupyterLab_for_the_oceandata-notebooks
             repo2docker.repo=https://github.com/${{ github.repository }}
             repo2docker.ref=${{ github.ref }}
       - name: Build args
         run: |
-          echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$IMAGE_NAME:cache" >> "$GITHUB_ENV"
+          echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$PACKAGE:cache" >> "$GITHUB_ENV"
           TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
           echo "IMAGE_NAME=${TAGS[0]}" >> "$GITHUB_ENV"
           TAGS=${TAGS[@]/#/--DockerEngine.extra_buildx_build_args=--tag=}
