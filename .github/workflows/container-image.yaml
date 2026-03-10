@@ -58,7 +58,11 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Inspect registry
         run: |
-          REV_DIGEST=$(docker buildx imagetools inspect --raw "$REV_TAG" | sha256 )
+          if [[ -n "$REV_TAG" ]]; then
+            REV_DIGEST=$(docker buildx imagetools inspect --raw "$REV_TAG" | sha256sum)
+          else
+            REV_DIGEST=""
+          fi
           echo "REV_DIGEST=$REV_DIGEST" >> "$GITHUB_ENV"
       - name: Setup python
         uses: actions/setup-python@v6
@@ -83,10 +87,10 @@ jobs:
       - name: Compare layers
         run: |
           EVENT_DIGEST=$(docker buildx imagetools inspect --raw "$EVENT_TAG" | sha256 )
-          if [ "$EVENT_DIGEST" = "$REV_DIGEST" ]; then
+          if [[ "$EVENT_DIGEST" == "$REV_DIGEST" ]]; then
             DST_TAG="$EVENT_TAG"
             SRC_TAG="$REV_TAG"
-          elif [ -n "$REV_TAG" ]; then
+          elif [[ -n "$REV_TAG" ]]; then
             DST_TAG="$REV_TAG"
             SRC_TAG="$EVENT_TAG"
           fi
