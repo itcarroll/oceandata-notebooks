@@ -1,9 +1,12 @@
 name: Preview website
 on:
   pull_request:
+    paths:
+      - .github/workflows/*-website.yaml
+      - docs/**
 jobs:
   call:
-    uses: ./.github/workflows/build-website.yaml
+    uses: .github/workflows/build-website.yaml
     secrets: inherit
   deploy:
     if: github.repository_owner != 'nasa'

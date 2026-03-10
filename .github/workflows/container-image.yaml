@@ -43,9 +43,8 @@ jobs:
         run: |
           echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$PACKAGE:cache" >> "$GITHUB_ENV"
           TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
-          echo "IMAGE_NAME=${TAGS[0]}" >> "$GITHUB_ENV"
-          TAGS=${TAGS[@]/#/--DockerEngine.extra_buildx_build_args=--tag=}
-          echo "TAGS=$TAGS" >> "$GITHUB_ENV"
+          echo "EVENT_TAG=${TAGS[0]}" >> "$GITHUB_ENV"
+          echo "REV_TAG=${TAGS[1]}" >> "$GITHUB_ENV"
           LABELS=($DOCKER_METADATA_OUTPUT_LABELS)
           LABELS=${LABELS[@]/#/--label }
           echo "LABELS=$LABELS" >> "$GITHUB_ENV"
@@ -60,8 +59,8 @@ jobs:
       - name: Inspect registry
         run: |
           TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
-          LAYERS=$(docker manifest inspect "${TAGS[-1]}" | jq -c '[.layers[].digest]')
-          echo "OLD_LAYERS=$LAYERS" >> "$GITHUB_ENV"
+          LAYERS=$(docker manifest inspect "$REV_TAG" | jq -c '[.layers[].digest]')
+          echo "REV_LAYERS=$LAYERS" >> "$GITHUB_ENV"
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -77,18 +76,14 @@ jobs:
           --subdir container
           --target-repo-dir /srv/container
           --appendix "$(< $PWD/container/appendix)"
-          --image-name "$IMAGE_NAME"
+          --image-name "$EVENT_TAG"
           --DockerEngine.extra_buildx_build_args=--cache-from="type=registry,ref=$CACHE"
           --DockerEngine.extra_buildx_build_args=--cache-to="type=registry,ref=$CACHE,mode=max"
-          $TAGS
           $LABELS
           $PWD
       - name: Compare layers
-        if: github.event_name == 'schedule'
         run: |
-          TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
-          NEW_LAYERS=$(docker manifest inspect "${TAGS[0]}" | jq -c '[.layers[].digest]')
-          if [ "$NEW_LAYERS" = "$OLD_LAYERS" ]; then
-            echo "Layers are identical, overwriting pushed image."
-            docker buildx imagetools create --tag ${TAGS[0]} ${TAGS[-1]}
+          EVENT_LAYERS=$(docker manifest inspect "$EVENT_TAG" | jq -c '[.layers[].digest]')
+          if [ "$EVENT_LAYERS" = "$REV_LAYERS" ]; then
+            docker buildx imagetools create --tag "$EVENT_TAG" "$REV_TAG"
           fi
