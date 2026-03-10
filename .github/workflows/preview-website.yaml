@@ -6,7 +6,7 @@ on:
       - docs/**
 jobs:
   call:
-    uses: .github/workflows/build-website.yaml
+    uses: ./.github/workflows/build-website.yaml
     secrets: inherit
   deploy:
     if: github.repository_owner != 'nasa'
