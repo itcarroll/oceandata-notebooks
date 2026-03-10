@@ -43,8 +43,8 @@ jobs:
         run: |
           echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$PACKAGE:cache" >> "$GITHUB_ENV"
           TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
-          echo "EVENT_TAG=${TAGS[0]}" >> "$GITHUB_ENV"
           echo "REV_TAG=${TAGS[1]}" >> "$GITHUB_ENV"
+          echo "EVENT_TAG=${TAGS[0]}" >> "$GITHUB_ENV"
           LABELS=($DOCKER_METADATA_OUTPUT_LABELS)
           LABELS=${LABELS[@]/#/--label }
           echo "LABELS=$LABELS" >> "$GITHUB_ENV"
@@ -58,8 +58,8 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Inspect registry
         run: |
-          LAYERS=$(docker manifest inspect "$REV_TAG" | jq -c '[.layers[].digest]')
-          echo "REV_LAYERS=$LAYERS" >> "$GITHUB_ENV"
+          REV_DIGEST=$(docker buildx imagetools inspect --raw "$REV_TAG" | sha256 )
+          echo "REV_DIGEST=$REV_DIGEST" >> "$GITHUB_ENV"
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -82,10 +82,12 @@ jobs:
           $PWD
       - name: Compare layers
         run: |
-          EVENT_LAYERS=$(docker manifest inspect "$EVENT_TAG" | jq -c '[.layers[].digest]')
-          if [ "$EVENT_LAYERS" = "$REV_LAYERS" ]; then
-            docker buildx imagetools create --tag "$EVENT_TAG" "$REV_TAG"
+          EVENT_DIGEST=$(docker buildx imagetools inspect --raw "$EVENT_TAG" | sha256 )
+          if [ "$EVENT_DIGEST" = "$REV_DIGEST" ]; then
+            DST_TAG="$EVENT_TAG"
+            SRC_TAG="$REV_TAG"
           elif [ -n "$REV_TAG" ]; then
-            docker tag "$EVENT_TAG" "$REV_TAG"
-            docker push "$REV_TAG"
+            DST_TAG="$REV_TAG"
+            SRC_TAG="$EVENT_TAG"
           fi
+          docker buildx imagetools create --prefer-index=false --tag "$DST_TAG" "$SRC_TAG"
