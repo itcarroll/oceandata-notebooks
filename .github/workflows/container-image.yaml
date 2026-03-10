@@ -86,7 +86,7 @@ jobs:
           $PWD
       - name: Compare layers
         run: |
-          EVENT_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$EVENT_TAG" )
+          EVENT_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$EVENT_TAG")
           if [[ "$EVENT_DIGEST" == "$REV_DIGEST" ]]; then
             DST_TAG="$EVENT_TAG"
             SRC_TAG="$REV_TAG"
