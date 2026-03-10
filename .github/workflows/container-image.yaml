@@ -86,5 +86,6 @@ jobs:
           if [ "$EVENT_LAYERS" = "$REV_LAYERS" ]; then
             docker buildx imagetools create --tag "$EVENT_TAG" "$REV_TAG"
           elif [ -n "$REV_TAG" ]; then
-            docker buildx imagetools create --tag "$REV_TAG" "$EVENT_TAG"
+            docker tag "$EVENT_TAG" "$REV_TAG"
+            docker push "$REV_TAG"
           fi
