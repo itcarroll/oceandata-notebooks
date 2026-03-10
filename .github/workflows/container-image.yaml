@@ -59,7 +59,7 @@ jobs:
       - name: Inspect registry
         run: |
           if [[ -n "$REV_TAG" ]]; then
-            REV_DIGEST=$(docker buildx imagetools inspect --raw "$REV_TAG" | sha256sum)
+            REV_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$REV_TAG")
           else
             REV_DIGEST=""
           fi
@@ -86,7 +86,7 @@ jobs:
           $PWD
       - name: Compare layers
         run: |
-          EVENT_DIGEST=$(docker buildx imagetools inspect --raw "$EVENT_TAG" | sha256 )
+          EVENT_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$EVENT_TAG" )
           if [[ "$EVENT_DIGEST" == "$REV_DIGEST" ]]; then
             DST_TAG="$EVENT_TAG"
             SRC_TAG="$REV_TAG"
