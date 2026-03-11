@@ -43,8 +43,8 @@ jobs:
         run: |
           echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$PACKAGE:cache" >> "$GITHUB_ENV"
           TAGS=($DOCKER_METADATA_OUTPUT_TAGS)
-          echo "REV_TAG=${TAGS[1]}" >> "$GITHUB_ENV"
-          echo "EVENT_TAG=${TAGS[0]}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=${TAGS[0]}" >> "$GITHUB_ENV"
+          echo "EXTRA_TAG=${TAGS[1]}" >> "$GITHUB_ENV"
           LABELS=($DOCKER_METADATA_OUTPUT_LABELS)
           LABELS=${LABELS[@]/#/--label }
           echo "LABELS=$LABELS" >> "$GITHUB_ENV"
@@ -58,12 +58,8 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: Inspect registry
         run: |
-          if [[ -n "$REV_TAG" ]]; then
-            REV_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$REV_TAG")
-          else
-            REV_DIGEST=""
-          fi
-          echo "REV_DIGEST=$REV_DIGEST" >> "$GITHUB_ENV"
+          EXTRA_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$EXTRA_TAG" || echo "")
+          echo "EXTRA_DIGEST=$EXTRA_DIGEST" >> "$GITHUB_ENV"
       - name: Setup python
         uses: actions/setup-python@v6
         with:
@@ -79,17 +75,17 @@ jobs:
           --subdir container
           --target-repo-dir /srv/container
           --appendix "$(< $PWD/container/appendix)"
-          --image-name "$EVENT_TAG"
+          --image-name "$IMAGE_TAG"
           --DockerEngine.extra_buildx_build_args=--cache-from="type=registry,ref=$CACHE"
           --DockerEngine.extra_buildx_build_args=--cache-to="type=registry,ref=$CACHE,mode=max"
           $LABELS
           $PWD
       - name: Compare layers
         run: |
-          EVENT_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$EVENT_TAG")
-          if [[ "$EVENT_DIGEST" == "$REV_DIGEST" ]]; then
-            docker buildx imagetools create --prefer-index=false --tag "$EVENT_TAG" "$REV_TAG"
-          elif [[ -n "$REV_TAG" ]]; then
-            docker buildx imagetools create --prefer-index=false --tag "$REV_TAG" "$EVENT_TAG"
+          EVENT_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$IMAGE_TAG")
+          if [[ "$EVENT_DIGEST" == "$EXTRA_DIGEST" ]]; then
+            docker buildx imagetools create --prefer-index=false --tag "$IMAGE_TAG" "$EXTRA_TAG"
+          elif [[ -n "$EXTRA_TAG" ]]; then
+            docker buildx imagetools create --prefer-index=false --tag "$EXTRA_TAG" "$IMAGE_TAG"
           fi
           
