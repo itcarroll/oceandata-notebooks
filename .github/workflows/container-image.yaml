@@ -82,10 +82,9 @@ jobs:
           $PWD
       - name: Compare layers
         run: |
-          EVENT_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$IMAGE_TAG")
-          if [[ "$EVENT_DIGEST" == "$EXTRA_DIGEST" ]]; then
+          IMAGE_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$IMAGE_TAG")
+          if [[ "$IMAGE_DIGEST" == "$EXTRA_DIGEST" ]]; then
             docker buildx imagetools create --prefer-index=false --tag "$IMAGE_TAG" "$EXTRA_TAG"
           elif [[ -n "$EXTRA_TAG" ]]; then
             docker buildx imagetools create --prefer-index=false --tag "$EXTRA_TAG" "$IMAGE_TAG"
           fi
-          
