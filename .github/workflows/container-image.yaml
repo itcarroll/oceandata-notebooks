@@ -80,7 +80,7 @@ jobs:
           --DockerEngine.extra_buildx_build_args=--cache-to="type=registry,ref=$CACHE,mode=max"
           $LABELS
           $PWD
-      - name: Compare layers
+      - name: Cleanup registry
         run: |
           IMAGE_DIGEST=$(docker buildx imagetools inspect --format '{{json .Manifest.Digest}}' "$IMAGE_TAG")
           if [[ "$IMAGE_DIGEST" == "$EXTRA_DIGEST" ]]; then
