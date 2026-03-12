@@ -37,8 +37,8 @@ jobs:
           labels: |
             org.opencontainers.image.title=${{ env.PACKAGE }}
             org.opencontainers.image.description=environment_with_JupyterLab_for_the_oceandata-notebooks
-            repo2docker.repo=https://github.com/${{ github.repository }}
-            repo2docker.ref=${{ github.ref }}
+          #repo2docker.repo=https://github.com/${{ github.repository }}
+          #repo2docker.ref=${{ github.ref }}
       - name: Build args
         run: |
           echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$PACKAGE:cache" >> "$GITHUB_ENV"
@@ -58,7 +58,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
       - name: Inspect registry
         run: |
-          EXTRA_DIGEST=$(jq -r ".config.digest" <(docker buildx imagetools inspect --raw "$EXTRA_TAG")) 
+          EXTRA_DIGEST=$(jq -rc "[.layers[].digest]" <(docker buildx imagetools inspect --raw "$EXTRA_TAG")) 
           echo "EXTRA_DIGEST=$EXTRA_DIGEST" >> "$GITHUB_ENV"
       - name: Setup python
         uses: actions/setup-python@v6
@@ -82,7 +82,7 @@ jobs:
           $PWD
       - name: Cleanup registry
         run: |
-          IMAGE_DIGEST=$(jq -r ".config.digest" <(docker buildx imagetools inspect --raw "$IMAGE_TAG"))
+          IMAGE_DIGEST=$(jq -rc "[.layers[].digest]" <(docker buildx imagetools inspect --raw "$IMAGE_TAG"))
           if [[ "$IMAGE_DIGEST" == "$EXTRA_DIGEST" ]]; then
             docker buildx imagetools create --prefer-index=false --tag "$IMAGE_TAG" "$EXTRA_TAG"
           elif [[ -n "$EXTRA_TAG" ]]; then
