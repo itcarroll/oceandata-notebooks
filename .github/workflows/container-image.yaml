@@ -36,9 +36,6 @@ jobs:
             type=raw,value=latest,enable=${{ github.event_name == 'push' }}
           labels: |
             org.opencontainers.image.title=${{ env.PACKAGE }}
-            org.opencontainers.image.description=environment_with_JupyterLab_for_the_oceandata-notebooks
-            repo2docker.repo=https://github.com/${{ github.repository }}
-            repo2docker.ref=${{ github.ref }}
       - name: Build args
         run: |
           echo "CACHE=$REGISTRY/$GITHUB_REPOSITORY_OWNER/$PACKAGE:cache" >> "$GITHUB_ENV"
@@ -46,8 +43,8 @@ jobs:
           echo "IMAGE_TAG=${TAGS[0]}" >> "$GITHUB_ENV"
           echo "EXTRA_TAG=${TAGS[1]}" >> "$GITHUB_ENV"
           LABELS=($DOCKER_METADATA_OUTPUT_LABELS)
-          LABELS=${LABELS[@]/#/--label }
-          echo "LABELS=$LABELS" >> "$GITHUB_ENV"
+          ANNOTATIONS=${LABELS[@]/#/--DockerEngine.extra_buildx_build_args=--annotation=}
+          echo "ANNOTATIONS=$ANNOTATIONS" >> "$GITHUB_ENV"
       - name: Authenticate with registry
         uses: docker/login-action@v4
         with:
@@ -78,7 +75,7 @@ jobs:
           --image-name "$IMAGE_TAG"
           --DockerEngine.extra_buildx_build_args=--cache-from="type=registry,ref=$CACHE"
           --DockerEngine.extra_buildx_build_args=--cache-to="type=registry,ref=$CACHE,mode=max"
-          $LABELS
+          $ANNOTATIONS
           $PWD
       - name: Cleanup registry
         run: |
