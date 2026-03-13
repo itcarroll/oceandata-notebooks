@@ -16,6 +16,7 @@ jobs:
     env:
       REGISTRY: ghcr.io
       PACKAGE: oceandata-jupyterlab
+      BUILDX_NO_DEFAULT_ATTESTATIONS: 1
     permissions:
       packages: write
     steps:
