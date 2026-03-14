@@ -90,7 +90,9 @@ jobs:
             docker buildx imagetools create --prefer-index=false --tag "$EXTRA_TAG" "$IMAGE_TAG"
           fi
       - name: Delete untagged manifests
-        uses: dataaxiom/ghcr-cleanup-action@v1
+        uses: actions/delete-package-versions@v5
         with:
-          packages: ${{ env.PACKAGE }},${{ env.PACKAGE }}-cache
-          delete-untagged: true  
+          package-name: ${{ env.PACKAGE }}
+          package-type: container
+          delete-only-untagged-versions: true
+          min-versions-to-keep: 0
